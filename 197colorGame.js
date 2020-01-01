@@ -1,6 +1,4 @@
 var difficulty = "hard"
-var colors = generateRandomColors(difficulty);
-var pickedColor = pickColor();
 
 var colorDisplay = document.getElementById("colorDisplay");
 var messageDisplay = document.getElementById("messageDisplay");
@@ -10,18 +8,68 @@ var easyButton = document.getElementsByClassName("easy")[0];
 var hardButton = document.getElementsByClassName("hard")[0];
 var squares = document.querySelectorAll(".square");
 
-// Display the color as question.
-displayColor();
-//초기화
-initiate();
+resetGame();
 initiateDifficultyButton();
+initiateResetButton();
 
-//이벤트 리스너 각 직사각형에 추가
-function initiate() {
+// function : reset the game
+function resetGame() {
+	//새로운 배열 생성
+	colors = generateRandomColors(difficulty);
+	//새 답을 뽑고
+	pickedColor = pickColor();
+	colorDisplay.textContent = pickedColor;	
+	//헤딩 색깔을 다시 돌려주고
+	heading1.style.background = "steelblue";
+	//스펜도 초기화
+	messageDisplay.textContent = "";
+	//버튼 이름 초기화
+	resetButton.textContent = "New Colors"
+	// 기존 이벤트 리스너 삭제
+	removeEventListenertoSquare();
+	addEventListenertoSquare();
+	toggleSquareDisplay();
+}
+
+// function : add Event Listener to Easy and Hard Button.
+function initiateDifficultyButton() {
+	easyButton.addEventListener("click", function() {
+		if (difficulty === "hard") {
+			easyButton.classList.add("selected");
+			hardButton.classList.remove("selected");
+			difficulty = "easy";
+			resetGame();
+		}
+	})
+	hardButton.addEventListener("click", function() {
+		if (difficulty === "easy") {
+			hardButton.classList.add("selected");
+			easyButton.classList.remove("selected");
+			difficulty = "hard";
+			resetGame();
+		}
+	})
+}
+
+function addEventListenertoSquare() {
+	for(var i = 0; i < squares.length; i++) {
+		if (colors[i]) {
+			squares[i].addEventListener("click", EventListenertoSquare);
+		}
+	}
+}
+
+function removeEventListenertoSquare() {
+	for(var i = 0; i < squares.length; i++) {
+		squares[i].removeEventListener("click", EventListenertoSquare);
+		squares[i].classList.remove("wrong");
+	}
+}
+
+function toggleSquareDisplay() {
 	for(var i = 0; i < squares.length; i++) {
 		if (colors[i]) {
 			squares[i].style.backgroundColor = colors[i];
-			squares[i].addEventListener("click", addEvent);
 			squares[i].style.display = "block";
 		} else {
 			squares[i].style.display = "none";
@@ -29,8 +77,7 @@ function initiate() {
 	}
 }
 
-//back
-function addEvent() {
+function EventListenertoSquare() {
 	var clickedColor = this.style.backgroundColor;
 	if(clickedColor === pickedColor) {
 		messageDisplay.textContent = "Correct!";
@@ -42,11 +89,6 @@ function addEvent() {
 		messageDisplay.textContent = "Try Again";
 	}
 }
-
-resetButton.addEventListener("click", function() {
-	resetGame();
-});
-
 
 //직사각형이 눌리면, 직사각형이 사라지며(배경색과 같게 변화), 
 function changeColors(color) {
@@ -83,52 +125,12 @@ function generateRandomColors(difficulty) {
 	return array;
 }
 
-// function : display the color on span in heading1
-function displayColor() {
-	colorDisplay.textContent = pickedColor;	
+function initiateResetButton() {
+	resetButton.addEventListener("click", function() {
+		resetGame();
+	});
 }
 
-// function : add Event Listener to Easy and Hard Button.
-function initiateDifficultyButton() {
-	easyButton.addEventListener("click", function() {
-		if (difficulty === "hard") {
-			easyButton.classList.add("selected");
-			hardButton.classList.remove("selected");
-			difficulty = "easy";
-			resetGame();
-		}
-	})
-	hardButton.addEventListener("click", function() {
-		if (difficulty === "easy") {
-			hardButton.classList.add("selected");
-			easyButton.classList.remove("selected");
-			difficulty = "hard";
-			resetGame();
-		}
-	})
-	// for(var i = 0; i < )
 
-}
 
-// function : reset the game
-function resetGame() {
-	//새로운 배열 생성
-	colors = generateRandomColors(difficulty);
-	//새 답을 뽑고
-	pickedColor = pickColor();
-	//헤딩 색깔을 다시 돌려주고
-	heading1.style.background = "steelblue";
-	//스펜도 초기화
-	messageDisplay.textContent = "";
-	//버튼 이름 초기화
-	resetButton.textContent = "New Colors"
-	//새 답에 대한 문제를 화면에 출력
-	displayColor();
-	// 기존 이벤트 리스너 삭제
-	for(var i = 0; i < squares.length; i++) {
-		squares[i].removeEventListener("click", addEvent);
-		squares[i].classList.remove("wrong");
-	}
-	// 새로운 이벤트 리스너 추가와 새로운 배열 등록
-	initiate();
-}
+
