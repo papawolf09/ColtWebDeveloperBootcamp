@@ -1,37 +1,35 @@
 var difficulty = "hard"
-
 var colors = generateRandomColors(difficulty);
-// var colors = [
-// "rgb(255, 0, 0)",
-// "rgb(255, 255, 0)",
-// "rgb(0, 255, 0)",
-// "rgb(0, 255, 255)",
-// "rgb(0, 0, 255)",
-// "rgb(255, 0, 255)",
-// ]
-
 var pickedColor = pickColor();
+
 var colorDisplay = document.getElementById("colorDisplay");
 var messageDisplay = document.getElementById("messageDisplay");
 var heading1 = document.getElementsByClassName("heading1")[0];
 var resetButton = document.getElementsByClassName("resetButton")[0];
+var easyButton = document.getElementsByClassName("easy")[0];
+var hardButton = document.getElementsByClassName("hard")[0];
 var squares = document.querySelectorAll(".square");
 
-
-colorDisplay.textContent = pickedColor;
-
+// Display the color as question.
+displayColor();
 //초기화
 initiate();
+initiateDifficultyButton();
 
 //이벤트 리스너 각 직사각형에 추가
 function initiate() {
 	for(var i = 0; i < squares.length; i++) {
-		squares[i].style.backgroundColor = colors[i];
-
-		squares[i].addEventListener("click", addEvent);
+		if (colors[i]) {
+			squares[i].style.backgroundColor = colors[i];
+			squares[i].addEventListener("click", addEvent);
+			squares[i].style.display = "block";
+		} else {
+			squares[i].style.display = "none";
+		}
 	}
 }
 
+//back
 function addEvent() {
 	var clickedColor = this.style.backgroundColor;
 	if(clickedColor === pickedColor) {
@@ -45,34 +43,14 @@ function addEvent() {
 	}
 }
 
-
-// 이벤트 리스너 : 리셋버튼 만들기
 resetButton.addEventListener("click", function() {
-	//새로운 배열 생성
-	colors = generateRandomColors(difficulty);
-	//새 답을 뽑고
-	pickedColor = pickColor();
-	//헤딩 색깔을 다시 돌려주고
-	heading1.style.background = "#232323";
-	//스펜도 초기화
-	messageDisplay.textContent = "";
-	//버튼 이름 초기화
-	resetButton.textContent = "New Colors"
-	//새 답에 대한 문제를 화면에 출력
-	colorDisplay.textContent = pickedColor;
-	// 기존 이벤트 리스너 삭제
-	for(var i = 0; i < squares.length; i++) {
-		squares[i].removeEventListener("click", addEvent);
-		squares[i].classList.remove("wrong");
-	}
-	// 새로운 이벤트 리스너 추가와 새로운 배열 등록
-	initiate();
+	resetGame();
 });
 
 
 //직사각형이 눌리면, 직사각형이 사라지며(배경색과 같게 변화), 
 function changeColors(color) {
-	for(var i = 0; i < squares.length; i++) {
+	for(var i = 0; i < colors.length; i++) {
 		squares[i].classList.remove("wrong");
 		squares[i].style.background = color;
 	}
@@ -103,4 +81,54 @@ function generateRandomColors(difficulty) {
 		array.push("rgb(" + getRandomNumber(256) + ", " + getRandomNumber(256) + ", " + getRandomNumber(256) + ")" )
 	}
 	return array;
+}
+
+// function : display the color on span in heading1
+function displayColor() {
+	colorDisplay.textContent = pickedColor;	
+}
+
+// function : add Event Listener to Easy and Hard Button.
+function initiateDifficultyButton() {
+	easyButton.addEventListener("click", function() {
+		if (difficulty === "hard") {
+			easyButton.classList.add("selected");
+			hardButton.classList.remove("selected");
+			difficulty = "easy";
+			resetGame();
+		}
+	})
+	hardButton.addEventListener("click", function() {
+		if (difficulty === "easy") {
+			hardButton.classList.add("selected");
+			easyButton.classList.remove("selected");
+			difficulty = "hard";
+			resetGame();
+		}
+	})
+	// for(var i = 0; i < )
+
+}
+
+// function : reset the game
+function resetGame() {
+	//새로운 배열 생성
+	colors = generateRandomColors(difficulty);
+	//새 답을 뽑고
+	pickedColor = pickColor();
+	//헤딩 색깔을 다시 돌려주고
+	heading1.style.background = "steelblue";
+	//스펜도 초기화
+	messageDisplay.textContent = "";
+	//버튼 이름 초기화
+	resetButton.textContent = "New Colors"
+	//새 답에 대한 문제를 화면에 출력
+	displayColor();
+	// 기존 이벤트 리스너 삭제
+	for(var i = 0; i < squares.length; i++) {
+		squares[i].removeEventListener("click", addEvent);
+		squares[i].classList.remove("wrong");
+	}
+	// 새로운 이벤트 리스너 추가와 새로운 배열 등록
+	initiate();
 }
